@@ -42,14 +42,16 @@ def list_repositories() -> list[Repository]:
     # Using Niquests' Session with multiplexing enabled for improved performance
     with niquests.Session(multiplexed=True) as session:
         while not is_last_page:
-            response: niquests.Response = session.get(f"{BITBUCKET_REPOS_API_URL}?start={start}", auth=auth, verify=True)
+            response = session.get(f"{BITBUCKET_REPOS_API_URL}?start={start}", auth=auth, verify=True)
             if response.status_code == 200:
                 data = response.json()
                 repos = data["values"]
                 for repo in repos:
+                    clone_links = repo["links"]["clone"]
+                    http_link = next(link["href"] for link in clone_links if link["name"] == "http")
                     repo_info = Repository(
                         name=repo["name"],
-                        link=repo["links"]["clone"][0]["href"],
+                        link=http_link,
                         description=repo.get("description", ""),
                     )
                     repo_list.append(repo_info)
