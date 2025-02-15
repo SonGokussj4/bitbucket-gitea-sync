@@ -1,4 +1,5 @@
 import csv
+from dataclasses import dataclass
 
 import niquests
 from niquests.auth import HTTPBasicAuth
@@ -10,6 +11,50 @@ from models import Repository
 # API endpoint for listing repositories
 BITBUCKET_PROJECTS_API_URL = f"{settings.BITBUCKET_URL}/rest/api/1.0/projects"
 BITBUCKET_REPOS_API_URL = f"{settings.BITBUCKET_URL}/rest/api/1.0/projects/{settings.BITBUCKET_PROJECT}/repos"
+
+
+@dataclass
+class BitbucketProject:
+    key: str
+    id: int
+    name: str
+    link: str
+
+
+def list_projects() -> list[str]:
+    """
+    List all projects in Bitbucket.
+    """
+    auth = HTTPBasicAuth(settings.BITBUCKET_USERNAME, settings.BITBUCKET_PASSWORD)
+    project_list: list[BitbucketProject] = []
+    start = 0
+    is_last_page = False
+
+    # Using Niquests' Session with multiplexing enabled for improved performance
+    with niquests.Session(multiplexed=True) as session:
+        while not is_last_page:
+            response = session.get(f"{BITBUCKET_PROJECTS_API_URL}?start={start}", auth=auth, verify=True)  # type: ignore
+            if response.status_code == 200:
+                data = response.json()
+                projects = data["values"]
+                for project in projects:
+                    bitbucket_project = BitbucketProject(
+                        key=project["key"],
+                        id=project["id"],
+                        name=project["name"],
+                        link=project["links"]["self"][0]["href"],
+                    )
+                    project_list.append(bitbucket_project)
+                    logger.info(f"Project: {project['key']}, Name: {project['name']}")
+
+                is_last_page = data["isLastPage"]
+                if not is_last_page:
+                    start = data["nextPageStart"]
+            else:
+                logger.error(f"Failed to list projects: {response.status_code} - {response.text}")
+                break
+
+    return project_list
 
 
 def list_repositories() -> list[Repository]:
@@ -143,6 +188,10 @@ repository_actions: dict[str, list[str]] = {
 }
 
 if __name__ == "__main__":
+    projects = list_projects()
+
+    exit()
+
     repositories = list_repositories()
 
     # Save the repos into a csv file with headers: Name, Link, Description, Action
