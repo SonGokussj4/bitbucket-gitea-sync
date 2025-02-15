@@ -1,0 +1,35 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Select file",
+      "program": "${workspaceFolder}/${input:programName}.py"
+    },
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "List and Extract repositories",
+      "program": "${workspaceFolder}/bitbucket_repos.py"
+    },
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Migrate",
+      "program": "${workspaceFolder}/migrate.py"
+    }
+  ],
+  "inputs": [
+    {
+      "type": "pickString",
+      "id": "programName",
+      "description": "Select the Python file to debug",
+      "options": [
+        "bitbucket_repos",
+        "log_config",
+        "migrate"
+      ]
+    }
+  ]
+}
