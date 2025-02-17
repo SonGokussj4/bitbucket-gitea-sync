@@ -4,32 +4,14 @@
     {
       "type": "debugpy",
       "request": "launch",
-      "name": "Select file",
-      "program": "${workspaceFolder}/${input:programName}.py"
-    },
-    {
-      "type": "debugpy",
-      "request": "launch",
-      "name": "List and Extract repositories",
+      "name": "Export repos",
       "program": "${workspaceFolder}/bitbucket_repos.py"
     },
     {
       "type": "debugpy",
       "request": "launch",
-      "name": "Migrate",
-      "program": "${workspaceFolder}/migrate.py"
+      "name": "Migrate repos",
+      "program": "${workspaceFolder}/gitea_migrate.py"
     }
   ],
-  "inputs": [
-    {
-      "type": "pickString",
-      "id": "programName",
-      "description": "Select the Python file to debug",
-      "options": [
-        "bitbucket_repos",
-        "log_config",
-        "migrate"
-      ]
-    }
-  ]
 }

@@ -11,11 +11,14 @@ class Settings(BaseSettings):
     BITBUCKET_TOKEN: str = ""
 
     GITEA_URL: str = ""
+    GITEA_API_URL: str = ""
     GITEA_TOKEN: str = ""
     GITEA_USERNAME: str = ""
     GITEA_USER_ID: str = "1"
     GITEA_ORGANIZATION: str = ""
     GITEA_SET_AS_MIRROR: bool = False
+
+    ORG_PREFIX: str = ""
 
     AZURE_DEVOPS_URL: str = ""
     AZURE_DEVOPS_ORGANIZATION: str = ""
