@@ -19,6 +19,8 @@ GITEA_DELETE_ORG_API_URL = f"{settings.GITEA_API_URL}/orgs"
 CURDIR = Path(__file__).resolve().parent
 CSV_REPOSITORIES = CURDIR / "bitbucket_repos.csv"  # Replace with the path to your CSV file
 
+DELETE_EXISTING_REPOS = False
+
 HEADERS = {
     "Authorization": f"token {settings.GITEA_TOKEN}",
     "Content-Type": "application/json",
@@ -124,7 +126,7 @@ def build_payload(repo: BitbucketRepo) -> dict[str, Any]:
         "private": False,
         "releases": True,
         "pull_requests": True,
-        # "lfs": True,
+        "lfs": True,
         # "issues": True,
     }
     return payload
@@ -172,18 +174,22 @@ def process_repository(repo: BitbucketRepo, session: niquests.Session):
     repo_url = f"{settings.GITEA_API_URL}/repos/{repo.project}/{repo.newname}"
     repo_response = session.get(repo_url, headers=HEADERS)  # type: ignore
 
-    if not repo_response.status_code == 404:
+    if not repo_response.status_code == 404 and not DELETE_EXISTING_REPOS:
         logger.info(f"Repository '{repo.newname}' already exists in Gitea. Ignoring it...")
         return
 
     payload = build_payload(repo)
-    # payload_clean = payload.copy()
-    # payload_clean["clone_addr"] = repo.link
-    # payload_clean["auth_token"] = settings.BITBUCKET_TOKEN
 
-    # Clone the repository from Bitbucket
+    # Clone the repository from Bitbucketaa
     try:
-        response = session.post(GITEA_MIGRATE_API_URL, json=payload, headers=HEADERS, verify=False, timeout=600)  # type: ignore
+        if DELETE_EXISTING_REPOS:
+            logger.info(f"Deleting existing repository: {repo.newname}...")
+            delete_repo(repo.project, repo.newname)
+
+        # Migrate the repository
+        logger.info(f"Migrating repository: {repo.newname} from {repo.link}... {payload}")
+        response = session.post(GITEA_MIGRATE_API_URL, json=payload, headers=HEADERS, verify=False, timeout=1800)  # type: ignore
+
     except niquests.exceptions.Timeout:
         logger.error(f"Timeout error while setting up repository: {repo.newname}")
         try:

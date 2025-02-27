@@ -227,7 +227,8 @@ def write_csv(data: list[BitbucketRepo], prefix: str = "", mode: str = "w"):
 
             # Active repository names should start with "ais-"
             if action == "Move":
-                new_name = f"{prefix}{new_name.replace('ais-', '')}"
+                # new_name = f"{prefix}{new_name.replace('ais-', '')}"
+                new_name = f"{prefix}{new_name}"
                 logger.info(f"Moving repository: {repo.name} to {new_name}")
 
             elif action == "Ignore":
@@ -238,7 +239,7 @@ def write_csv(data: list[BitbucketRepo], prefix: str = "", mode: str = "w"):
                 new_name = f"zArchive-ais-{new_name.replace('ais-', '')}"
                 logger.info(f"Archiving repository: {repo.name}")
 
-            new_name = new_name.lower().replace(" ", "-").replace("_", "-")
+            new_name = new_name.lower().replace(" ", "-").replace("_", "-").replace(".", "-").replace("(", "").replace(")", "")
 
             # Write repository details to CSV
             writer.writerow([repo.project, repo.projectname, repo.name, new_name, repo.link, repo.description, action])
@@ -258,11 +259,11 @@ def write_csv(data: list[BitbucketRepo], prefix: str = "", mode: str = "w"):
 if __name__ == "__main__":
     projects = list_projects()
 
-    # projects_filter: list[str] = ["KCMLP", "SPA"]
+    # projects_filter: list[str] = ["KCMLP"]
     # projects = [project for project in projects if project.key in projects_filter]
 
-    ignore_projects: list[str] = ["KMIK", "VVAS", "DMOC", "KCMLP", "SPA"]
-    projects = [project for project in projects if project.key not in ignore_projects]
+    # ignore_projects: list[str] = ["KMIK", "VVAS", "DMOC", "KCMLP", "SPA"]
+    # projects = [project for project in projects if project.key not in ignore_projects]
 
     for project in projects:
         logger.info(project)
