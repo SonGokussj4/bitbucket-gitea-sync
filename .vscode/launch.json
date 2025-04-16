@@ -1,0 +1,17 @@
+{
+  "version": "0.1.0",
+  "configurations": [
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Export repos",
+      "program": "${workspaceFolder}/bitbucket_repos.py"
+    },
+    {
+      "type": "debugpy",
+      "request": "launch",
+      "name": "Migrate repos",
+      "program": "${workspaceFolder}/gitea_migrate.py"
+    }
+  ],
+}

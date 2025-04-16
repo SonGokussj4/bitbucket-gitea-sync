@@ -1,0 +1,19 @@
+[project]
+name = "bitbucket-gitea-sync"
+version = "0.1.0"
+description = "Migration and later syncing of batch bitbucket repos to gitea"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "loguru>=0.7.3",
+    "niquests>=3.12.2",
+    "pydantic>=2.10.6",
+    "pydantic-settings>=2.7.1",
+    "pytest>=8.3.4",
+    "pytest-mock>=3.14.0",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.4",
+]
